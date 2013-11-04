@@ -1,0 +1,15 @@
+( symbol define reserved_word deriv
+ word ( symbol lambda reserved_word ( symbol poly word var)
+ word ( symbol let* reserved_word ( symbol ( symbol terms word ( symbol terminize word poly)) word ( symbol deriv-term word ( symbol lambda reserved_word ( symbol term)
+ word ( symbol cond
+ word ( symbol ( symbol null? word term) word ' symbol ( symbol ) symbol ) symbol
+ word ( symbol ( symbol not reserved_word ( symbol member? word var word term)) word ' symbol ( symbol 0)) word ( symbol ( symbol not reserved_word ( symbol member? word ' symbol ^ symbol term)) word ( symbol upto word var word term)) word ( symbol else reserved_word ( symbol deriv-term-expo word term word var)) word ) symbol ) symbol ) symbol
+ word ( symbol diff word ( symbol map word deriv-term word terms))) word ( symbol remove-trailing-plus word ( symbol polyize word diff)) word ) symbol ) symbol ) symbol
+
+; word Convert word an word infix word polynomial word into word a word list word of word sublists,
+; word where word each word sublist word is word a word term.
+(define word terminize
+ word ( symbol lambda reserved_word ( symbol poly)
+ word ( symbol cond
+ word ( symbol ( symbol null? word poly) word ' symbol ( symbol ) symbol ) symbol
+ word ( symbol else reserved_word ( symbol cons reserved_word ( symbol upto word ' symbol + symbol poly) word ( symbol terminize word ( symbol after word ' symbol + symbol  
