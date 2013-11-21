@@ -20,5 +20,6 @@ public class Main {
         File input = new File("input.lisp");
         Scanner sc = new Scanner(input);
         StevenBinary listTree = new StevenBinary(sc);
+        listTree.print(listTree.root);
     }
 }

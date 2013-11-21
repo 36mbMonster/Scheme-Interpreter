@@ -163,7 +163,7 @@ public class Scanner {
         else
             out[1] = "word";
 
-        System.out.print(out[0] + " " + out[1] + " ");
+        //System.out.print(out[0] + " " + out[1] + " ");
         return out;
 
     }
