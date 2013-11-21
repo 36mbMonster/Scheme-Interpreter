@@ -43,13 +43,17 @@ public class StevenBinary {
         symbol_table = new TreeMap<String, String>();
         fileScanner = x;
         root = new Node();
+        Node curNode = root;
         
         String[] initialize = fileScanner.nextToken();
         
         while(initialize[0] != null)
-        {     	  
-      	  add(initialize[0], initialize[1], root);
+        { 
+      	  add(initialize[0], initialize[1], curNode);
       	  initialize = fileScanner.nextToken();
+      	  if (curNode.right == null)
+      		  curNode.right = new Node();
+      	  curNode = curNode.right;
         }
     }
 
@@ -62,12 +66,13 @@ public class StevenBinary {
         Node currentNode = startNode;
         //if the next token is a ( then create left node and recurse
         if (nextData.equals("(")) {
-            String[] nextInput = fileScanner.nextToken();
-            if (nextData.equals(")")) {
-                return;
-            }
+        	String[] nextInput = fileScanner.nextToken();
+            
             currentNode.left = new Node();
             add(nextInput[0], nextInput[1], currentNode.left);
+        }
+        if (nextData.equals(")")) {
+            return;
         }
         //if there is no data in the current node
         if (currentNode.data == null) {
