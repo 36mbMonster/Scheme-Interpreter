@@ -64,9 +64,9 @@ public class StevenBinary {
             symbol_table.put(nextData, null);
         }
         Node currentNode = startNode;
-        String[] nextInput = fileScanner.nextToken();
         //if the next token is a ( then create left node and recurse
         if (nextData.equals("(")) {
+        	String[] nextInput = fileScanner.nextToken();
             
             currentNode.left = new Node();
             add(nextInput[0], nextInput[1], currentNode.left);
