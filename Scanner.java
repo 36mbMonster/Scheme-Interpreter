@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public class Scanner {
 
     private int index = 0;
-    private char[] raw;
+    private ArrayList<Character> raw;
     
     ArrayList<String> trueLines = new ArrayList<String>();
     
@@ -20,14 +20,14 @@ public class Scanner {
     };
     private final char[] SYMBOLS = {
         '!', '@', '#', '$', '%', '^', '&',
-        '(', ')', '-', '_', '+', '=', '{', '}',
+        '(', ')', '-', '+', '=', '{', '}',
         '[', ']', '|', '\\', ':', '\"', '\'',
         '<', ',', '>', '.', '/', '~', '`'
     };
 
     public Scanner(File input) throws IOException {
         FileInputStream inStream = new FileInputStream(input);
-        raw = new char[Character.MAX_VALUE];
+        raw = new ArrayList<Character>();
         index = 0;
         String currentLine = "";
 
@@ -44,7 +44,7 @@ public class Scanner {
       	  		//System.out.println(trueLines.get(trueLines.size()-1));
       	  	}
       	  	
-            raw[i] = (char) current;
+            raw.add((char) current);
             current = inStream.read();
             i++;
         }
@@ -54,7 +54,7 @@ public class Scanner {
     public Scanner() {
     }
 
-    public ArrayList<String> readInTokens() {
+   /* public ArrayList<String> readInTokens() {
         ArrayList<String> tokens = new ArrayList<String>();
 
         String token = "";
@@ -83,13 +83,13 @@ public class Scanner {
         }
 
         return tokens;
-    }
+    }*/
 
     public String[] nextToken() 
     {
         String out[] = new String[2];
         
-//        if (raw[index] == ';') 
+//        if (raw[index] == ';') print
 //        {
 //      	  
 //      	  skipThroughComments();
@@ -109,12 +109,12 @@ public class Scanner {
 //        if(raw[index] == '\n')
 //      	  System.out.println(trueLines.remove(0));
         
-        while(raw[index] == ';' || raw[index] == ' ')
+        while(index != raw.size() && (raw.get(index) == ';' || raw.get(index) == ' '))
         {
-	        if(raw[index] == ';') 
+	        if(raw.get(index) == ';') 
 	      	  skipThroughComments();
 	        
-	        if(raw[index] == ' ')
+	        if(raw.get(index) == ' ')
 	        {
 	           currentToken = currentToken.trim();
 	            
@@ -127,7 +127,9 @@ public class Scanner {
 	        }
         }
         
-        if (isSymbol(raw[index])) 
+        if(index == raw.size())
+            System.exit(0);
+        else if (isSymbol(raw.get(index))) 
         {
             currentToken = currentToken.trim();
             if (!currentToken.equals("")) 
@@ -136,7 +138,7 @@ public class Scanner {
             } 
             else 
             {
-                out[0] = new String("" + raw[index]);
+                out[0] = new String("" + raw.get(index));
                 index++;
                 currentToken = "";
             }
@@ -144,9 +146,9 @@ public class Scanner {
         else
         {
       	  //If the token is a word
-      	  while(raw[index] != ' ')
+      	  while(index != raw.size() && raw.get(index) != ' ')
       	  {
-      		  	currentToken += raw[index];
+      		  	currentToken += raw.get(index);
       	  		index++;
       	  }
       	  out[0] = currentToken;
@@ -171,12 +173,12 @@ public class Scanner {
     private void skipThroughComments()
     {
 
-       while(raw[index] != '\n')
+       while(raw.get(index) != '\n')
            index++;
 
        index++;
        
-       if(raw[index] == ';')
+       if(raw.get(index) == ';')
       	 skipThroughComments();
        else
       	 return;
@@ -184,7 +186,7 @@ public class Scanner {
     
     private void skipThroughWhitespace()
     {
-   	 while(raw[index] == ' ')
+   	 while(raw.get(index) == ' ')
    	 {
    		 index++;
 //   		 if(raw[index] == '\n')
