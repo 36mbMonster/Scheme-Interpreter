@@ -80,7 +80,14 @@ public class StevenBinary {
     }
 
     void print(Node n) {
+        System.out.print("In print");
         if (n == root) {
+            System.out.print("In root print");
+            if(n == null)
+                {
+                    System.out.print("yo dawg wassup");
+                    return;
+                }
             System.out.print("(");
         }
         //if it's a leaf
