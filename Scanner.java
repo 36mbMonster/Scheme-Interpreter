@@ -51,63 +51,11 @@ public class Scanner {
         inStream.close();
     }
 
-    public Scanner() {
-    }
-
-   /* public ArrayList<String> readInTokens() {
-        ArrayList<String> tokens = new ArrayList<String>();
-
-        String token = "";
-        boolean comment = false;
-        for (int i = 0; i < raw.length; i++) {
-            if (raw[i] == ';') {
-                comment = true;
-            } else if (raw[i] == ' ' && !comment) {
-                token = token.trim();
-                if (!token.equals("")) {
-                    tokens.add(token);
-                }
-                token = "";
-            } else if (isSymbol(raw[i]) && !comment) {
-                token = token.trim();
-                if (!token.equals("")) {
-                    tokens.add(token);
-                }
-                tokens.add(new String("" + raw[i]));
-                token = "";
-            } else if (!comment) {
-                token += raw[i];
-            } else if (comment && raw[i] == '\n') {
-                comment = false;
-            }
-        }
-
-        return tokens;
-    }*/
+    public Scanner() {}
 
     public String[] nextToken() 
     {
         String out[] = new String[2];
-        
-//        if (raw[index] == ';') print
-//        {
-//      	  
-//      	  skipThroughComments();
-//        } 
-//        if (raw[index] == ' ') 
-//        {
-//            currentToken = currentToken.trim();
-//            
-//            if (!currentToken.equals("")) 
-//            {
-//                out[0] = currentToken;
-//            }
-//            currentToken = "";
-//            index++;
-//        } 
-        
-//        if(raw[index] == '\n')
-//      	  System.out.println(trueLines.remove(0));
         
         while(index != raw.size() && (raw.get(index) == ';' || raw.get(index) == ' '))
         {
@@ -165,7 +113,7 @@ public class Scanner {
         else
             out[1] = "word";
 
-        //System.out.print(out[0] + " " + out[1] + " ");
+        System.out.print(out[0] + " " + out[1] + " ");
         return out;
 
     }
