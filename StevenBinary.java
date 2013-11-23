@@ -78,6 +78,7 @@ public class StevenBinary {
                 currentNode.left = new Node();
                 String[] nextInput = fileScanner.nextToken();
                 nextData = nextInput[0];
+                trees.add(currentNode.left);
                 add(nextData, nextInput[1], currentNode.left);
             }
             /*String[] nextInput = fileScanner.nextToken();
