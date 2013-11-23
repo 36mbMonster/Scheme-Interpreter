@@ -2,8 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
+package pkg152parserstuff;
 
-
+import java.util.ArrayList;
 import java.util.TreeMap;
 
 /**
@@ -34,7 +35,8 @@ public class StevenBinary {
     Node root;
     Scanner fileScanner;
     TreeMap<String, String> symbol_table;
-
+    ArrayList<Node> trees;
+    
     StevenBinary() {
         root = null;
     }
@@ -43,18 +45,12 @@ public class StevenBinary {
         symbol_table = new TreeMap<String, String>();
         fileScanner = x;
         root = new Node();
-        Node curNode = root;
-        
         String[] initialize = fileScanner.nextToken();
-        
-        while(initialize[0] != null)
-        { 
-      	  add(initialize[0], initialize[1], curNode);
-      	  initialize = fileScanner.nextToken();
-      	  if (curNode.right == null)
-      		  curNode.right = new Node();
-      	  curNode = curNode.right;
+        if (initialize[0] == null) {
+            return;
         }
+        trees = new ArrayList<Node>();
+        add(initialize[0], initialize[1], root);
     }
 
     private void add(String nextData, String identifier, Node startNode) {
@@ -64,38 +60,58 @@ public class StevenBinary {
             symbol_table.put(nextData, null);
         }
         Node currentNode = startNode;
-        //if the next token is a ( then create left node and recurse
-        if (nextData.equals("(")) {
-        	String[] nextInput = fileScanner.nextToken();
-            
-            currentNode.left = new Node();
-            add(nextInput[0], nextInput[1], currentNode.left);
-        }
         if (nextData.equals(")")) {
             return;
         }
-        //if there is no data in the current node
-        if (currentNode.data == null) {
-            currentNode.data = nextData;
-        } //if there is already data in the current node, create a right node and put data in it
+        //if the next token is a ( then create left node and recurse until end of level
+        if (nextData.equals("(")) {
+            //if you encounter a ( in the root node then ignore it
+            if (currentNode == root) {
+                String[] nextInput = fileScanner.nextToken();
+                nextData = nextInput[0];
+                add(nextData, nextInput[1], root);
+                //add root node to tree
+                trees.add(root);
+            }
+            //if it's not the root node, recurse left
+            else{
+                currentNode.left = new Node();
+                String[] nextInput = fileScanner.nextToken();
+                nextData = nextInput[0];
+                add(nextData, nextInput[1], currentNode.left);
+            }
+            /*String[] nextInput = fileScanner.nextToken();
+             currentNode.left = new Node();
+             //if there is no data in the current node
+             if (currentNode.left.data == null) {
+             add(nextInput[0], nextInput[1], currentNode.left);
+             } //if there is already data in the current node, create a right node and put data in it
+             else {
+             currentNode.right = new Node();
+             add(nextData, identifier, currentNode.right);
+             }*/
+        } //if it's not a left paren then set car left and recurse right
         else {
+            currentNode.left = new Node();
+            currentNode.left.data = nextData;
+            String[] nextInput = fileScanner.nextToken();
+            nextData = nextInput[0];
             currentNode.right = new Node();
-            add(nextData, identifier, currentNode.right);
+            add(nextData, nextInput[1], currentNode.right);
         }
     }
 
+
     void print(Node n) {
-        System.out.print("In print");
         if (n == root) {
-            System.out.print("In root print");
             if(n == null)
-                {
-                    System.out.print("yo dawg wassup");
-                    return;
-                }
+            {
+                return;
+            }
             System.out.print("(");
         }
         //if it's a leaf
+        
         if (n.left == null && n.right == null) {
             System.out.print(n.data + " ");
             return;
