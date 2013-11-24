@@ -51,6 +51,35 @@ public class Main {
 			return false;
 	}
 	
+	public int plus(String a, String b)
+	{
+		int x = Integer.parseInt(a);
+		int y = Integer.parseInt(b);
+		return x + y;
+	}
+
+	public int minus(String a, String b)
+	{
+		int x = Integer.parseInt(a);
+		int y = Integer.parseInt(b);
+		return x - y;
+	}
+	
+	public int multiply(String a, String b)
+	{
+		int x = Integer.parseInt(a);
+		int y = Integer.parseInt(b);
+		return x * y;
+	}
+	
+	public int divide(String a, String b)
+	{
+		int x = Integer.parseInt(a);
+		int y = Integer.parseInt(b);
+		return x / y;
+	}
+
+	
 	/**
      * @param args the command line arguments
      */
