@@ -57,13 +57,15 @@ public class StevenBinary {
     }
 
     private void add(String nextData, String identifier, Node startNode) {
-        if (!identifier.equalsIgnoreCase("symbol") && !identifier.equalsIgnoreCase("number")
-                && !identifier.equalsIgnoreCase("reserved_word") && !identifier.equalsIgnoreCase("word")) {
+        if (identifier.equalsIgnoreCase("IDENTIFIER") || identifier.equalsIgnoreCase("symbol")) {
             //ADD TO SYMBOL TABLE HERE
             symbol_table.put(nextData, null);
         }
         Node currentNode = startNode;
         if (nextData.equals(")")) {
+            //create a new record and shove this symbol table in BUT WHEN DO I ERASE?
+            ActivationRecord newRecord = new ActivationRecord(symbol_table, scopeLevel);
+            Backend.push(newRecord);
             return;
         }
         //if the next token is a ( then create left node and recurse until end of level
