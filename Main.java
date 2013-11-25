@@ -79,6 +79,30 @@ public class Main {
 		return x / y;
 	}
 
+	public ArrayList<String> list(String s)
+	{
+		ArrayList<String> a = new ArrayList<String>();
+		String[] words = s.split(" ");
+		for (int i = 0; i < words.length; i++)
+			a.add(words[i]);
+
+		return a;
+	}
+	
+	public boolean equals(String a, String b)
+	{
+		return a.equals(b);
+	}
+	
+	public boolean and(boolean a, boolean b)
+	{
+		return a&&b;
+	}
+	
+	public boolean or(boolean a, boolean b)
+	{
+		return a||b;
+	}
 	
 	/**
      * @param args the command line arguments
