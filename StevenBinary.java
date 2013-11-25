@@ -36,12 +36,15 @@ public class StevenBinary {
     Scanner fileScanner;
     TreeMap<String, String> symbol_table;
     ArrayList<Node> trees;
+    int scopeLevel;
     
     StevenBinary() {
         root = null;
+        scopeLevel = 0;
     }
 
     StevenBinary(Scanner x) {
+        scopeLevel = 0;
         symbol_table = new TreeMap<String, String>();
         fileScanner = x;
         root = new Node();
@@ -65,6 +68,7 @@ public class StevenBinary {
         }
         //if the next token is a ( then create left node and recurse until end of level
         if (nextData.equals("(")) {
+            scopeLevel++;
             //if you encounter a ( in the root node then ignore it
             if (currentNode == root) {
                 String[] nextInput = fileScanner.nextToken();
