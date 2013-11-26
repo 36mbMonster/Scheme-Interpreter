@@ -2,191 +2,193 @@
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.PushbackInputStream;
 import java.util.ArrayList;
 
-public class Scanner {
+/**
+* @author Jonathan Vaccaro
+* @date 2013
+*
+* Scheme interpreter token scanner v2
+* Scan your tokens with style!
+*/
 
-    private int index = 0;
-    private ArrayList<Character> raw;
-    
-    ArrayList<String> trueLines = new ArrayList<String>();
-    
-    private String currentToken = "";
-    
-    private final String[] SYSTEM_WORDS = {
-        "and", "begin", "cond", "define", "else",
+public class Scanner
+{
+	private final String[] SYSTEM_WORDS =
+	{
+		"and", "begin", "cond", "define", "else",
         "if", "lambda", "let", "letrec", "let*",
         "not", "or", "quote", "cons", "car", "cdr"
-    };
-    private final char[] SYMBOLS = {
-        '!', '@', '#', '$', '%', '^', '&',
-        '(', ')', '-', '+', '=', '{', '}',
-        '[', ']', '|', '\\', ':', '\"', '\'',
-        '<', ',', '>', '.', '/', '~', '`'
-    };
+	};
 
-    public Scanner(File input) throws IOException {
-        FileInputStream inStream = new FileInputStream(input);
-        raw = new ArrayList<Character>();
-        index = 0;
-        String currentLine = "";
+	private final char[] SYMBOLS = 
+	{
+		'{', '}', '(', ')', '[', ']',
+		',', '\'', '\\', '\"', '#' 
+	};
 
-        int i = 0;
-        int current = inStream.read();
-        while (current != -1) 
-        {
-      	  	if(current != '\n')
-      	  		currentLine += (char)current;
-      	  	else
-      	  	{
-      	  		trueLines.add(currentLine);
-      	  		currentLine = "";
-      	  		//System.out.println(trueLines.get(trueLines.size()-1));
-      	  	}
-      	  	
-            raw.add((char) current);
-            current = inStream.read();
-            i++;
-        }
-        inStream.close();
+	String currentToken;
+	File raw;
+	PushbackInputStream iStream;
+
+	public Scanner(){}
+	public Scanner(File raw) throws IOException
+	{
+		this.raw = raw;
+		iStream = new PushbackInputStream(new FileInputStream(raw));
+		currentToken = "";
+	}
+
+	public String[] nextToken() throws IOException
+	{
+		//Return array of size two containing the token and its type.
+		String[] out = new String[2];
+		int currentChar = iStream.read();
+
+		if(currentChar != -1)
+		{
+			//It's a symbol.
+			if(isSymbol(currentChar))
+			{
+				//This is for if the first char is a symbol
+				//because currentToken would be empty.
+				if(currentToken == "")
+				{
+					out[0] = ""+(char)currentChar;
+					out[1] = processType(out[0]);
+				}
+				//If the first token has been done already.
+				else
+				{
+					//finish current token
+					out[0] = currentToken;
+					out[1] = processType(currentToken);
+					//make new token for symbol
+					currentToken = new String(""+(char)currentChar);
+				}
+			}
+			//It's a comment.
+			else if((char) currentChar == ';')
+			{
+				skipLine();
+				return nextToken();
+			}
+			//It's whitespace.
+			else if((char) currentChar == ' ' || (char) currentChar == '\n' 
+				|| (char) currentChar == '\r')
+			{
+				//finish current token, if not empty.
+				if(!currentToken.trim().equals(""))
+				{
+					out[0] = currentToken;
+					out[1] = processType(currentToken);
+					//make new current token
+					currentToken = new String("");
+					return out;
+				}
+
+				//skip the whitespace
+				skipWhitespace(currentChar);
+				//look for more tokens if we don't
+				//have any currently.
+				if(out[0] == null)
+					return nextToken();
+			}
+			//It's a number or word of some kind.
+			else
+			{
+				//We can't return the token yet because it
+				//hasn't been completely built yet.
+				currentToken += (char)currentChar;
+				//recursively call nextToken() until we have
+				//a complete string to return.
+				out[0] = nextToken()[0];
+				//null token protection
+				if(out[0] != null)
+				{
+					//We have a complete token!
+					//Evaluate its type and reset currentToken.
+					out[1] = processType(out[0]);
+					currentToken = "";
+				}
+			}
+		}
+		else
+			iStream.close();
+
+		return out;
+	}
+
+	private boolean isSymbol(int in)
+	{
+		char achar = (char) in;
+
+		for(int i = 0; i < SYMBOLS.length; i++)
+		{
+			if(achar == SYMBOLS[i])
+				return true;
+		}
+		return false;
+	}
+
+	private boolean isNumber(int in) throws NumberFormatException
+	{
+		char achar = (char) in;
+
+		if(Character.isDigit(achar) || achar == '.')
+        	return true;
+        return false;
+	}
+
+	private boolean isNumber(String token) throws NumberFormatException
+	{
+		for(int i = 0; i < token.length(); i++)
+		{
+			if(!isNumber(token.charAt(i)))
+				return false;
+		}
+		return true;
+	}
+
+	private boolean isSystemWord(String token) 
+	{
+    	for (int i = 0; i < SYSTEM_WORDS.length; i++) 
+    	{
+   			if (token.equals(SYSTEM_WORDS[i])) 
+    			return true;
+    	}
+    	return false;
     }
 
-    public Scanner() {}
+	private void skipLine() throws IOException
+	{
+		int current = iStream.read();
+		while((char)current != '\n' && (char)current != '\r')
+			current = iStream.read();
+		if((char)current == ';')
+			skipLine();
+	}
 
-    public String[] nextToken() 
-    {
-        String out[] = new String[2];
-        
-        while(index != raw.size() && (raw.get(index) == ';' || raw.get(index) == ' '))
-        {
-	        if(raw.get(index) == ';') 
-	      	  skipThroughComments();
-	        
-	        if(raw.get(index) == ' ')
-	        {
-	           currentToken = currentToken.trim();
-	            
-	           if (!currentToken.equals("")) 
-	           {
-	         	  out[0] = currentToken;
-	           }
-	           else
-	         	  skipThroughWhitespace();
-	        }
-        }
-        
-        if(index == raw.size())
-            System.exit(0);
-        else if (isSymbol(raw.get(index))) 
-        {
-            currentToken = currentToken.trim();
-            if (!currentToken.equals("")) 
-            {
-                out[0] = currentToken;
-            } 
-            else 
-            {
-                out[0] = new String("" + raw.get(index));
-                index++;
-                currentToken = "";
-            }
-        }
+	private void skipWhitespace(int in) throws IOException
+	{
+		int current = in;
+		while(current == ' ' || current == '\n' || current == '\r')
+			current = iStream.read();
+		//unread the character that wasn't whitespace
+		//so it can be processed by nextToken().
+		iStream.unread(current);	
+	}
+
+	public String processType(String token)
+	{
+        if (token.length() == 1 && isSymbol(token.charAt(0))) 
+            return "symbol";
+        else if (isNumber(token)) 
+            return "number";
+        else if (isSystemWord(token)) 
+            return "reserved_word";
         else
-        {
-      	  //If the token is a word
-      	  while(index != raw.size() && raw.get(index) != ' ')
-      	  {
-      		  	currentToken += raw.get(index);
-      	  		index++;
-      	  }
-      	  out[0] = currentToken;
-      	  currentToken = "";
-        }
-
-        //System.out.println(out[0]);
-        if (out[0].length() == 1 && isSymbol(out[0].charAt(0))) 
-            out[1] = "symbol";
-        else if (isNumber(out[0])) 
-            out[1] = "number";
-        else if (isSystemWord(out[0])) 
-            out[1] = "reserved_word";
-        else
-            out[1] = "word";
-
-        System.out.print(out[0] + " " + out[1] + " ");
-        return out;
-
-    }
-
-    private void skipThroughComments()
-    {
-
-       while(raw.get(index) != '\n')
-           index++;
-
-       index++;
-       
-       if(raw.get(index) == ';')
-      	 skipThroughComments();
-       else
-      	 return;
-    }
-    
-    private void skipThroughWhitespace()
-    {
-   	 while(raw.get(index) == ' ')
-   	 {
-   		 index++;
-//   		 if(raw[index] == '\n')
-//   			 System.out.println(trueLines.remove(0));
-   	 }
-    }
-    
-    //Simple helper method for determining whether the character is a symbol
-    //by using constants within the Character class.
-    private boolean isSymbol(char achar) {
-        for (char c : SYMBOLS) {
-            if (achar == c) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    //Simple helper method for determining whether the character is a number
-    private boolean isNumber(String token) {
-        try {
-            Integer.parseInt(token);
-            return true;
-        } catch (NumberFormatException nfe) {
-        }
-        return false;
-    }
-
-    //Simple helper method for determining whether the character is a reserved
-    //system word or not.
-    private boolean isSystemWord(String token) {
-        for (int i = 0; i < SYSTEM_WORDS.length; i++) {
-            if (token.equals(SYSTEM_WORDS[i])) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public void printTokens(ArrayList<String> tokens) {
-        for (int i = 0; i < tokens.size(); i++) {
-            String current = tokens.get(i);
-            System.out.print(current);
-            if (isSymbol(current.charAt(0))) {
-                System.out.println(" symbol");
-            } else if (isSystemWord(current)) {
-                System.out.println(" reserved word");
-            } else if (isNumber(current)) {
-                System.out.println(" number");
-            } else {
-                System.out.println(" word");
-            }
-        }
-    }
-}
+        	return "word";
+	}
+} 
