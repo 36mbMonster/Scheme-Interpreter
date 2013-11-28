@@ -3,10 +3,12 @@
  * and open the template in the editor.
  */
 
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import frontend.*;
+import backend.*;
 
 /**
  *
@@ -111,6 +113,6 @@ public class Main {
         File input = new File("input.lisp");
         Scanner sc = new Scanner(input);
         StevenBinary listTree = new StevenBinary(sc);
-        listTree.print(listTree.root);
+        listTree.print(listTree.getRoot());
     }
 }
