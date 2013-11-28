@@ -42,12 +42,12 @@ public class StevenBinary {
     
     StevenBinary() {
         root = null;
-        scopeLevel = 0;
+        scopeLevel = -1;
     }
 
     public StevenBinary(Scanner x) throws IOException
     {
-        scopeLevel = 0;
+        scopeLevel = -1;
         symbol_table = new TreeMap<String, String>();
         fileScanner = x;
         root = new Node();
@@ -56,6 +56,7 @@ public class StevenBinary {
             return;
         }
         trees = new ArrayList<Node>();
+        System.out.println(initialize[0] + " : " + initialize[1]);
         add(initialize[0], initialize[1], root);
     }
 
